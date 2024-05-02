@@ -1,8 +1,7 @@
 const { query, param,dy } = require('express-validator');
 const ApiError = require('../../exceptions/api-error.js');
 const { isNumeric } = require('validator');
-const upload = require('../middlewares/multer-middelware.js');
-const multer = require('multer');
+const { accessValidators } = require('../../auth/validators/auth-validator.js')
 
 const limitValidator = query('list_size').custom((value) => {
   if (value && !isNumeric(value)) {
@@ -27,9 +26,10 @@ const idValidator = param('id').custom((value) => {
 
 
 module.exports = {
-  putValidators: [idValidator],
-  getByIdValidators: [idValidator],
-  downloadByIdValidators: [idValidator],
-  getListValidators: [pageValidator, limitValidator],
-  deleteByIdValidators: [idValidator]
+  putValidators: [idValidator, ...accessValidators],
+  uploadValidators: [...accessValidators],
+  getByIdValidators: [idValidator, ...accessValidators],
+  downloadByIdValidators: [idValidator, ...accessValidators],
+  getListValidators: [pageValidator, limitValidator, ...accessValidators],
+  deleteByIdValidators: [idValidator, ...accessValidators]
 };
